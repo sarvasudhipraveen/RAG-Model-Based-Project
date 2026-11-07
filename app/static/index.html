@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuRAG Studio | Intelligent Multi-Project PDF Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <button class="btn btn-ghost btn-icon" id="sidebarToggleBtn" title="Toggle Sidebar" style="display:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <path d="M9 10h6"/>
+          <path d="M9 14h4"/>
+        </svg>
+      </div>
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="brand-title">DocuRAG</span>
+          <span class="brand-badge">Studio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Project Switcher -->
+    <div class="header-center">
+      <div class="project-select-wrapper">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Project:</span>
+        <select id="projectSelect" title="Select Project">
+          <option value="" disabled selected>Loading projects...</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <div id="activeProviderBadge" class="stat-pill" title="Active Model / Provider" style="cursor: pointer;">
+        <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--accent-emerald); display: inline-block;"></span>
+        <span id="headerProviderLabel">Offline Engine</span>
+      </div>
+
+      <button class="btn btn-secondary btn-sm" id="openSettingsBtn" title="LLM & RAG Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </button>
+
+      <button class="btn btn-primary btn-sm" id="openNewProjectBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        <span>New Project</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar: Project & Documents -->
+    <aside class="app-sidebar" id="appSidebar">
+
+      <!-- Active Project Info -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          <span>Current Project</span>
+          <button class="btn btn-ghost btn-sm" id="deleteProjectBtn" title="Delete Project" style="color: var(--accent-rose); padding: 2px 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+        <div class="project-details-card">
+          <div class="project-title-row">
+            <h3 class="active-project-name" id="sidebarProjectTitle">No Project Selected</h3>
+          </div>
+          <p class="project-desc-text" id="sidebarProjectDesc">Create or select a project to get started.</p>
+          <div class="project-stat-pills">
+            <div class="stat-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>Docs:</span>
+              <strong id="statDocCount">0</strong>
+            </div>
+            <div class="stat-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Chunks:</span>
+              <strong id="statChunkCount">0</strong>
+            </div>
+            <div class="stat-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>Pages:</span>
+              <strong id="statPageCount">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF Ingestion & Upload -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">
+          <span>Upload PDF Document</span>
+        </div>
+        <div class="upload-dropzone" id="uploadDropzone">
+          <input type="file" id="pdfFileInput" accept=".pdf" />
+          <div class="upload-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="upload-title">Drop PDF file here</div>
+          <div class="upload-hint">or click to browse (.pdf)</div>
+        </div>
+
+        <!-- Quick Attach Workspace PDF button -->
+        <div id="workspaceFilesContainer" style="margin-top: 10px;">
+          <!-- Populated dynamically if workspace has pdfs -->
+        </div>
+      </div>
+
+      <!-- Indexed Documents Section -->
+      <div class="sidebar-section" style="flex: 1; border-bottom: none;">
+        <div class="sidebar-section-title">
+          <span>Indexed Documents</span>
+          <button class="btn btn-ghost btn-sm" id="browseChunksBtn" title="Inspect RAG Chunks">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>Chunks</span>
+          </button>
+        </div>
+        <div class="documents-container" id="documentsContainer">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 20px 0;">
+            No documents indexed yet in this project.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="app-main">
+      
+      <!-- Chat message stream -->
+      <div class="chat-container" id="chatContainer">
+
+        <!-- Clean Chat Area (Welcome hero and suggested questions removed) -->
+        <div id="welcomeHero" style="display: none;"></div>
+        <div id="suggestedQuestions" style="display: none;"></div>
+
+        <!-- Messages stream -->
+        <div id="messagesList" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Dynamically appended messages -->
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="chat-input-bar-container">
+        <div class="input-box-wrapper">
+          <textarea 
+            id="chatInput" 
+            class="chat-textarea" 
+            rows="1" 
+            placeholder="Ask a question about the document... (Press Enter to send, Shift+Enter for new line)"
+          ></textarea>
+          
+          <div class="input-controls">
+            <button class="btn btn-ghost btn-icon btn-sm" id="copyInputBtn" title="Copy input text" style="display: none;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button class="btn btn-ghost btn-icon btn-sm" id="clearInputBtn" title="Delete / clear input text" style="display: none;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <button class="send-btn" id="sendBtn" title="Send Question">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: New Project -->
+  <div class="modal-overlay" id="newProjectModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New RAG Project</h3>
+        <button class="btn btn-ghost btn-icon btn-sm modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Project Name *</label>
+          <input type="text" id="newProjName" class="form-input" placeholder="e.g. Human Nutrition Research" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <textarea id="newProjDesc" class="form-textarea" rows="2" placeholder="Brief notes about the document and scope..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Initial Document</label>
+          <select id="newProjDocSource" class="form-select">
+            <option value="none">Create empty project (upload later)</option>
+            <option value="workspace_nutrition" selected>Attach Human-Nutrition-2020-Edition-1598491699.pdf (Workspace)</option>
+          </select>
+          <span class="form-hint">You can index sample pages instantly or upload any other PDF anytime.</span>
+        </div>
+        <div class="form-group" id="pageRangeGroup">
+          <label class="form-label">Index Page Range</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="number" id="newProjStartPage" class="form-input" value="1" min="1" placeholder="Start (e.g. 1)" style="flex: 1;" />
+            <input type="number" id="newProjEndPage" class="form-input" value="50" min="1" placeholder="End (e.g. 50)" style="flex: 1;" />
+          </div>
+          <span class="form-hint">Tip: Indexing pages 1–50 is nearly instantaneous. You can index additional pages anytime.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close-btn">Cancel</button>
+        <button class="btn btn-primary" id="submitCreateProjectBtn">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Settings -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">RAG & Model Settings</h3>
+        <button class="btn btn-ghost btn-icon btn-sm modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">LLM Provider</label>
+          <select id="settingsProviderSelect" class="form-select">
+            <option value="offline">Built-in Local Offline Engine (No API key needed)</option>
+            <option value="groq">Groq (Ultra-Fast Llama 3 - Recommended)</option>
+            <option value="gemini">Google Gemini (Gemini 1.5 Flash)</option>
+            <option value="openai">OpenAI (GPT-4o-mini)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="settingsModelGroup">
+          <label class="form-label">Model</label>
+          <select id="settingsModelSelect" class="form-select"></select>
+        </div>
+
+        <div class="form-group" id="settingsApiKeyGroup">
+          <label class="form-label">API Key</label>
+          <input type="password" id="settingsApiKeyInput" class="form-input" placeholder="Enter API Key..." />
+          <span class="form-hint" id="apiKeyHint">Stored locally in your browser. Not sent anywhere except directly for inference.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="display: flex; justify-content: space-between;">
+            <span>Top-K Retrieved Chunks</span>
+            <strong id="topKValue" style="color: var(--accent-cyan);">4</strong>
+          </label>
+          <input type="range" id="settingsTopKInput" min="2" max="8" value="4" style="width: 100%; cursor: pointer;" />
+          <span class="form-hint">Number of highest-scoring passages provided as grounded context.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close-btn">Cancel</button>
+        <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Browse Chunks Inspector -->
+  <div class="modal-overlay" id="chunksModal">
+    <div class="modal-card" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Indexed Chunks Explorer</h3>
+        <button class="btn btn-ghost btn-icon btn-sm modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="chunkSearchInput" class="form-input" placeholder="Search chunks by keyword..." style="flex: 1;" />
+          <button class="btn btn-secondary btn-sm" id="chunkSearchBtn">Search</button>
+        </div>
+        <div id="chunksListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Single Citation Detail -->
+  <div class="modal-overlay" id="citationDetailModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="citationModalTitle">Source Passage</h3>
+        <button class="btn btn-ghost btn-icon btn-sm modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <span class="stat-pill" id="citationModalPage">Page ?</span>
+          <span class="stat-pill" id="citationModalScore">Score: 0%</span>
+          <span class="stat-pill" id="citationModalDoc">Doc</span>
+        </div>
+        <div id="citationModalText" style="font-size: 0.9rem; line-height: 1.6; background: rgba(0,0,0,0.3); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); max-height: 380px; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

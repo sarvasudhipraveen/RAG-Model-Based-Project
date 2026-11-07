@@ -1,0 +1,30 @@
+# Secrets and Environment Variables
+.env
+.env.local
+.env.*.local
+*.key
+AQ.*.txt
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# IDE & OS Files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Vercel Cache
+.vercel/
