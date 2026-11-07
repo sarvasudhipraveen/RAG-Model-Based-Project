@@ -7,7 +7,7 @@ A full-stack, production-grade Retrieval-Augmented Generation (RAG) web applicat
 ## 🌐 Live Local Server
 
 The application is actively running on your machine:
-- **Local URL:** [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **Local URL:** [http://localhost:8000](https://m0r9nqzb-8000.inc1.devtunnels.ms/) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 To start or restart anytime:
 ```bash
